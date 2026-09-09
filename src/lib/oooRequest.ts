@@ -7,7 +7,7 @@
  * easy to get subtly wrong.
  */
 
-import { Ooo, ApprovalStatus, AWAY_MARKER, CALENDAR_STATUSES, RequestType } from "./schema.js";
+import { Ooo, ApprovalStatus, AWAY_MARKER, CALENDAR_STATUSES, RequestType, ROW_MARKERS, TRAVEL_MARKER } from "./schema.js";
 import { readDateEnd, readDateStart, readPeople, readString, pageUrl, type NotionPage } from "./notion.js";
 
 export interface OooRequest {
@@ -163,9 +163,11 @@ export function toOooRequest(page: NotionPage, disambiguate: readonly string[] =
   const rawTitle = readString(page, Ooo.TITLE);
   // The worker writes the title back, so strip its own marker before using the
   // title as a name fallback — otherwise each pass would append another one.
-  // Strip at either end: the marker leads today and trailed in earlier rows.
+  // Every marker, at either end: which one a row carries depends on its Type,
+  // and the marker trailed in the earliest rows before it moved to the front.
+  const markers = ROW_MARKERS.join("|");
   const title = rawTitle
-    ? rawTitle.replace(new RegExp(`^\\s*${AWAY_MARKER}\\s*|\\s*${AWAY_MARKER}\\s*$`, "g"), "").trim() || null
+    ? rawTitle.replace(new RegExp(`^\\s*(?:${markers})\\s*|\\s*(?:${markers})\\s*$`, "g"), "").trim() || null
     : null;
 
   const personName = notionName ?? (email ? nameFromEmail(email) : null) ?? title ?? "Team member";
@@ -243,9 +245,15 @@ export function blockedReason(request: OooRequest): string | null {
   return null;
 }
 
-/** Calendar subject, e.g. "✈️ Andon". */
+/**
+ * Calendar subject: "✈️ Andon" for time off, "💼 Andon" for work travel.
+ *
+ * The marker is the only thing distinguishing them — the name still carries no
+ * reason, so a glance says "away" or "working elsewhere" and nothing more.
+ */
 export function eventSubject(request: OooRequest): string {
-  return `${AWAY_MARKER} ${request.calendarName}`;
+  const marker = request.type === RequestType.TRAVEL ? TRAVEL_MARKER : AWAY_MARKER;
+  return `${marker} ${request.calendarName}`;
 }
 
 /**

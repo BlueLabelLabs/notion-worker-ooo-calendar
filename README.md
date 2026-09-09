@@ -34,7 +34,7 @@ One idempotent function, run on every delivery regardless of which property chan
 branch on transitions; it makes the calendar match whatever the row currently says. That is what
 makes replays, out-of-order deliveries, and the sweep all safe against the same row.
 
-Events are titled `✈️ <first name>` (the plane is the house shorthand for "away"), and are
+Events are titled `✈️ <first name>`, or `💼 <first name>` for Work Related Travel — someone at a client onsite is working, not off (the plane is the house shorthand for "away"), and are
 `isAllDay: true`, `showAs: "free"`, **no attendees** (the shared calendar is already the audience;
 an attendee would get mailed an invite and a copy on their personal calendar), and
 `isReminderOn: false`.
@@ -93,7 +93,7 @@ The shared calendar is fed by three Notion databases, each in its own lane:
 
 | Source | Kind | Cadence | Event prefix |
 |---|---|---|---|
-| **OOO Entries** | a request workflow — submitted, approved, status moves | webhook + 10m sweep | `✈️` |
+| **OOO Entries** | a request workflow — submitted, approved, status moves | webhook + 10m sweep | `✈️` time off, `💼` work travel |
 | **BlueLabel US Holidays** | reference data | 6h | `🇺🇸` |
 | **Vendor Partner Holidays** | reference data | 6h | `🏢` |
 

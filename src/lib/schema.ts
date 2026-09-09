@@ -107,6 +107,15 @@ export const CALENDAR_STATUSES: readonly string[] = [ApprovalStatus.APPROVED, Ap
 export const AWAY_MARKER = "✈️";
 
 /**
+ * Work Related Travel gets a briefcase instead. Someone at a client onsite is
+ * working, not off, and a calendar of identical planes hides that difference.
+ */
+export const TRAVEL_MARKER = "💼";
+
+/** Every marker the worker has ever put on a title, for stripping one back off. */
+export const ROW_MARKERS = [AWAY_MARKER, TRAVEL_MARKER] as const;
+
+/**
  * `Type` option names.
  *
  * TRAVEL is auto-approved: a client onsite is something a person announces,

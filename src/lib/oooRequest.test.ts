@@ -97,10 +97,20 @@ test("reads a complete approved row", () => {
   assert.equal(eventSubject(request), "✈️ Andon");
 });
 
-test("the away marker is stripped from the title before it is used as a name fallback", () => {
+test("work travel takes the briefcase, everything else the plane", () => {
+  const travel = toOooRequest(page({ ...APPROVED_ROW, Type: { type: "select", select: { name: "Work Related Travel" } } }));
+  assert.equal(eventSubject(travel), "💼 Andon");
+  for (const type of ["Paid Time Off", "Unpaid Time Off", null]) {
+    const row = toOooRequest(page({ ...APPROVED_ROW, Type: { type: "select", select: type ? { name: type } : null } }));
+    assert.equal(eventSubject(row), "✈️ Andon", `type=${type}`);
+  }
+});
+
+test("EITHER marker is stripped from the title before it is used as a name fallback", () => {
   // The worker writes "<name> ✈️" back into Title. Without stripping, a row
   // with no identity would gain another marker on every pass.
-  for (const raw of ["✈️ Andon", "Andon ✈️"]) {
+  // A travel row carries the briefcase, and the earliest rows trailed the plane.
+  for (const raw of ["✈️ Andon", "Andon ✈️", "💼 Andon", "Andon 💼"]) {
     const noIdentity = { ...APPROVED_ROW, "Your Email": email(null), BlueLabeler: bluelabeler(null), Title: title(raw) };
     const request = toOooRequest(page(noIdentity));
     assert.equal(request.calendarName, "Andon", `raw=${raw}`);
