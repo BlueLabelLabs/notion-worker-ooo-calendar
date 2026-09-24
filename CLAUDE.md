@@ -93,3 +93,20 @@ token, or machine binding, so it transplants to another host as-is.
 
 Also: `ntn update` refuses to self-update an npm-installed copy. Use
 `npm install -g ntn@latest`.
+
+## Deploying
+
+```bash
+npm run deploy      # local, interactive
+npm run deploy:ci   # cloud sessions — adds --yes
+```
+
+`ntn workers deploy` prompts for confirmation because this worker declares a
+managed `worker.database`, and a cloud session cannot answer an interactive
+prompt — it fails with "Deploying this worker with linked databases requires
+confirmation". Use `deploy:ci` there.
+
+`--yes` skips a guard against **releasing** a managed database, which happens when
+new code stops declaring one that is currently linked. Before using it, confirm the
+`worker.database(...)` declarations are unchanged — do not assume it from the diff
+looking small.

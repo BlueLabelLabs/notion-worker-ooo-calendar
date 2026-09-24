@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test src/**/*.test.ts",
     "dev": "ntn workers dev",
-    "deploy": "ntn workers deploy"
+    "deploy": "ntn workers deploy",
+    "deploy:ci": "ntn workers deploy --yes"
   },
   "dependencies": {
     "@notionhq/client": "^5.22.0",
