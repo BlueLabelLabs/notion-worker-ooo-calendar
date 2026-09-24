@@ -27,6 +27,12 @@ Learned across the Kantata, Read.ai, and DPPT workers.
    `properties` object.** Always `pages.retrieve` the row.
 4. **Notion automations have no "page deleted" trigger**, so deletion handling
    always needs a scheduled sweep.
+5. **As of 2026-07-16 the page CONTENT of worker-managed (synced) rows is
+   read-only to integrations.** Property writes on those rows still work. A
+   worker that needs to write blocks onto a row has to use a native companion
+   database instead — this is why `notion-worker-dppt` writes its parsed tables
+   to a "DPPT Details" DB rather than onto Kantata Engagement pages
+   (`src/lib/dpptDetails.ts` in that repo).
 
 Also: a scheduled `worker.sync` needs `NOTION_API_TOKEN` set — webhooks get
 `context.notion` injected, syncs do not. And `ntn workers exec` never initializes
